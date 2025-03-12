@@ -1,0 +1,6 @@
+For my dear group, here is a straight-forward guide to running the CTFd docker:
+
+1. Open your docker compose desktop client.
+2. get the terminal to inside the CTFd folder.
+3. type in: 'docker compose up' into the terminal.
+Example: (my_user@my_pc:~/Downloads/CTFd$ docker compose up

@@ -1,0 +1,19 @@
+To compile:
+python3 -m venv test
+source test/bin/activate
+
+python3 -m pip install nuitka
+
+python3 -m nuitka keycard_scanner.py --onefile
+
+
+Soltions:
+
+Cards/KC_374_Bruce.nfc
+76544567
+[[Expired]]
+
+
+Cards/KC_206_Pete.nfc
+44693522
+[[Correct]]

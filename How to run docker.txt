@@ -4,3 +4,15 @@ For my dear group, here is a straight-forward guide to running the CTFd docker:
 2. get the terminal to inside the CTFd folder.
 3. type in: 'docker compose up' into the terminal.
 Example: (my_user@my_pc:~/Downloads/CTFd$ docker compose up
+
+
+
+
+    Uninstall Docker
+    Restart your machine
+    Install a linux WLS distro
+    a. Check available linux distros available : wsl --list --online
+    b. Choose the one you want (I chose Ubuntu, the 1st option) : wsl --install -d {DISTRO-NAME} e.g. wsl --install -d Ubuntu
+    c. You might get an error about a missing WLS update while installing, go on google with the error and you will find the link to the installation of that update.
+    Install Docker (Docker Desktop Installer.exe
+

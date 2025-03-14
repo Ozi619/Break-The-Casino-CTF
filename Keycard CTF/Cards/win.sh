@@ -8,7 +8,7 @@ success_log="success_log.txt"
 
 # Generate combinations: Each line = "filename<TAB>passwordA<TAB>passwordB<TAB>passwordC"
 for file in *.nfc; do
-    paste -d '\t' - - - < Passcodes2.txt | sed "s/^/$file\t/" >> "$combinations_log"
+    paste -d '\t' - - - < Passcodes.txt | sed "s/^/$file\t/" >> "$combinations_log"
 done
 
 # Function to attempt unlocking the keycard
@@ -20,7 +20,7 @@ try_combination() {
 
     expect <<EOF
         send "\r"
-        spawn python3 keycard_scanner.py
+        spawn ./keycard_scanner.bin
 
         expect "Enter the file name:" { send "$file\r" }
         expect "Please enter your pass-code:" { send "$passwordA\r" }

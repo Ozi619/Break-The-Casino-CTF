@@ -1,20 +1,26 @@
 #!/usr/bin/env bash
 
+# Create a new combinations file
 tempfile="combinations.txt"
+success_log="success_log.txt"
 > "$tempfile"
+> "$success_log"
 
-# Each line will contain "filename<TAB>password<TAB>password<TAB>password"
+# Generate combinations: Each line = "filename<TAB>passwordA<TAB>passwordB<TAB>passwordC"
 for file in *.nfc; do
     paste -d '\t' - - - < Passcodes2.txt | sed "s/^/$file\t/" >> "$tempfile"
 done
 
+# Function to attempt unlocking the keycard
 try_combination() {
     file="$1"
     passwordA="$2"
     passwordB="$3"
     passwordC="$4"
+
     expect <<EOF
         set timeout 1
+        send "\r"
         spawn python3 keycard_scanner.py
 
         expect "Enter the file name:" { send "$file\r" }
@@ -24,8 +30,8 @@ try_combination() {
             "Card and Pass accepted" {
                 send "3\r"
                 expect "Press Enter to close the program" { send "\r" }
-                echo "SUCCESS: $file accepted password $passwordA" >> "$tempfile"
-                echo "SUCCESS: $file accepted password $passwordA"
+                puts "SUCCESS: $file accepted password $passwordA"
+                echo "SUCCESS: $file accepted password $passwordA" >> "$success_log"
                 exit 0
             }
             "Error: Keycard and pass-code do not match" {
@@ -34,8 +40,8 @@ try_combination() {
                     "Card and Pass accepted" {
                         send "3\r"
                         expect "Press Enter to close the program" { send "\r" }
-                        echo "SUCCESS: $file accepted password $passwordB" >> "$tempfile"
-                        echo "SUCCESS: $file accepted password $passwordB"
+                        puts "SUCCESS: $file accepted password $passwordB"
+                        echo "SUCCESS: $file accepted password $passwordB" >> "$success_log"
                         exit 0
                     }
                     "Error: Keycard and pass-code do not match" {
@@ -44,8 +50,8 @@ try_combination() {
                             "Card and Pass accepted" {
                                 send "3\r"
                                 expect "Press Enter to close the program" { send "\r" }
-                                echo "SUCCESS: $file accepted password $passwordC" >> "$tempfile"
-                                echo "SUCCESS: $file accepted password $passwordC"
+                                puts "SUCCESS: $file accepted password $passwordC"
+                                echo "SUCCESS: $file accepted password $passwordC" >> "$success_log"
                                 exit 0
                             }
                         }
@@ -54,7 +60,10 @@ try_combination() {
             }
         }
 
-        expect "Press Enter to close the program" { send "\r" }
+	# This doesn't seem to trigger, WHY????
+	# the odd part is it works on a success.
+        expect "Press Enter to close the program"
+        send "\r"
         exit 1
 EOF
     return $?
@@ -62,6 +71,14 @@ EOF
 
 export -f try_combination
 
-echo "Testing combinations concurrently..."
+echo "Testing combinations sequentially..."
 
-parallel -j 2 --colsep '\t' 'try_combination {1} {2} {3} {4} && echo "SUCCESS: {1} accepted password {2} {3} {4}"' :::: "$tempfile"
+# Read and execute each combination one at a time, ensuring sequential execution
+while IFS=$'\t' read -r arg1 arg2 arg3 arg4; do
+    echo start
+    try_combination "$arg1" "$arg2" "$arg3" "$arg4"
+    echo done
+done < "$tempfile"
+
+echo "All attempts completed."
+

@@ -8,7 +8,7 @@ success_log="success_log.txt"
 
 # Generate combinations: Each line = "filename<TAB>passwordA<TAB>passwordB<TAB>passwordC"
 for file in *.nfc; do
-    paste -d '\t' - - - < Passcodes2.txt | sed "s/^/$file\t/" >> "$tempfile"
+    paste -d '\t' - - - < Passcodes.txt | sed "s/^/$file\t/" >> "$tempfile"
 done
 
 # Function to attempt unlocking the keycard
@@ -19,13 +19,12 @@ try_combination() {
     passwordC="$4"
 
     expect <<EOF
-        set timeout 1
         send "\r"
         spawn python3 keycard_scanner.py
 
         expect "Enter the file name:" { send "$file\r" }
         expect "Please enter your pass-code:" { send "$passwordA\r" }
-
+        send "hello"
         expect {
             "Card and Pass accepted" {
                 send "3\r"
@@ -54,17 +53,17 @@ try_combination() {
                                 echo "SUCCESS: $file accepted password $passwordC" >> "$success_log"
                                 exit 0
                             }
+                	expect "Press Enter to close the program" { send "\r" }
+                	exit 1
                         }
+                     expect "Press Enter to close the program" { send "\r" }
+                     exit 1
                     }
+                expect "Press Enter to close the program" { send "\r" }
+                exit 1
                 }
             }
         }
-
-	# This doesn't seem to trigger, WHY????
-	# the odd part is it works on a success.
-        expect "Press Enter to close the program"
-        send "\r"
-        exit 1
 EOF
     return $?
 }

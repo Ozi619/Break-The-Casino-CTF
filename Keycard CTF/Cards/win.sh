@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-# Create a new combinations file
-tempfile="combinations.txt"
+# Create a new combinations and success file
+combinations_log="combinations_log.txt"
 success_log="success_log.txt"
-> "$tempfile"
+> "$combinations_log"
 > "$success_log"
 
 # Generate combinations: Each line = "filename<TAB>passwordA<TAB>passwordB<TAB>passwordC"
 for file in *.nfc; do
-    paste -d '\t' - - - < Passcodes.txt | sed "s/^/$file\t/" >> "$tempfile"
+    paste -d '\t' - - - < Passcodes2.txt | sed "s/^/$file\t/" >> "$combinations_log"
 done
 
 # Function to attempt unlocking the keycard
@@ -24,13 +24,13 @@ try_combination() {
 
         expect "Enter the file name:" { send "$file\r" }
         expect "Please enter your pass-code:" { send "$passwordA\r" }
-        send "hello"
+
         expect {
             "Card and Pass accepted" {
                 send "3\r"
                 expect "Press Enter to close the program" { send "\r" }
                 puts "SUCCESS: $file accepted password $passwordA"
-                echo "SUCCESS: $file accepted password $passwordA" >> "$success_log"
+                exec bash -c "echo 'SUCCESS: $file accepted password $passwordA' >> '$success_log'"
                 exit 0
             }
             "Error: Keycard and pass-code do not match" {
@@ -40,7 +40,7 @@ try_combination() {
                         send "3\r"
                         expect "Press Enter to close the program" { send "\r" }
                         puts "SUCCESS: $file accepted password $passwordB"
-                        echo "SUCCESS: $file accepted password $passwordB" >> "$success_log"
+                        exec bash -c "echo 'SUCCESS: $file accepted password $passwordB' >> '$success_log'"
                         exit 0
                     }
                     "Error: Keycard and pass-code do not match" {
@@ -50,7 +50,7 @@ try_combination() {
                                 send "3\r"
                                 expect "Press Enter to close the program" { send "\r" }
                                 puts "SUCCESS: $file accepted password $passwordC"
-                                echo "SUCCESS: $file accepted password $passwordC" >> "$success_log"
+				exec bash -c "echo 'SUCCESS: $file accepted password $passwordC' >> '$success_log'"
                                 exit 0
                             }
                 	expect "Press Enter to close the program" { send "\r" }
@@ -74,10 +74,9 @@ echo "Testing combinations sequentially..."
 
 # Read and execute each combination one at a time, ensuring sequential execution
 while IFS=$'\t' read -r arg1 arg2 arg3 arg4; do
-    echo start
     try_combination "$arg1" "$arg2" "$arg3" "$arg4"
-    echo done
-done < "$tempfile"
+done < "$combinations_log"
 
+echo ""
 echo "All attempts completed."
 

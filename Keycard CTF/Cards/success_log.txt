@@ -1,0 +1,2 @@
+SUCCESS: KC_206_Pete.nfc accepted password 44693522
+SUCCESS: KC_374_Bruce.nfc accepted password 76544567

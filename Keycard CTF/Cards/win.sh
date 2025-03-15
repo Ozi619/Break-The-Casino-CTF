@@ -19,9 +19,9 @@ try_combination() {
     passwordC="$4"
 
     expect <<EOF
-        send "\r"
-        spawn ./keycard_scanner.bin
-
+    	send "\r"
+    	spawn ./keycard_scanner.bin
+	
         expect "Enter the file name:" { send "$file\r" }
         expect "Please enter your pass-code:" { send "$passwordA\r" }
 
@@ -75,8 +75,8 @@ echo "Testing combinations sequentially..."
 # Read and execute each combination one at a time, ensuring sequential execution
 while IFS=$'\t' read -r arg1 arg2 arg3 arg4; do
     try_combination "$arg1" "$arg2" "$arg3" "$arg4"
+    sudo rm -rf /tmp/onefile_* # Clean up the temporary file after, dangerous command.
 done < "$combinations_log"
 
 echo ""
-echo "All attempts completed."
-
+echo "All attempts completed, check success_log.txt, for found combinations"

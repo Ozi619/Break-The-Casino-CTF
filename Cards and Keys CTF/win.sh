@@ -7,7 +7,7 @@ success_log="success_log.txt"
 > "$success_log"
 
 # Generate combinations: Each line = "filename<TAB>passwordA<TAB>passwordB<TAB>passwordC"
-for file in Cards/*.nfc; do
+for file in KeyCards/*.nfc; do
     paste -d '\t' - - - < Passcodes.txt | sed "s|^|$file\t|" >> "$combinations_log"
 done
 

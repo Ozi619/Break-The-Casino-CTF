@@ -1,0 +1,22 @@
+Script needs to be run before the python file
+Script mode needs to be  changed through chmod command. "chmod +x scripting4everone.sh"
+script must be run. using commands like "CAT", "NANO" won't work as it will make you more confuse. 
+once you run the script you should be able to get the location but it will be encrypted which needs to be decrypted using the Decryption.py file
+When you try to decrypt the encrypted string it will ask you for offset_value value which is 4. Participants needs to carefully see the script name to be able to find that value.
+Once you enter 4 you shouldbe able to find the location of the casino which is "CrownMelbourneCBD".
+
+Alternatively you can also write the python code which will check the encrypted string against every single offset_value  (bruteforce) to be able to decrypt the text.
+
+Add this code
+        # Using for loop to provide offset values range 
+        # for offset_value in range(1,95):
+        #     decrypted_string = ''
+
+        #     # Using nested loop to convert encrypted string
+        #     for ch in encrypted_string:
+        #         if ord(ch) - offset_value < 32:
+        #             decrypted_string += chr(ord(ch) - offset_value + 95)
+        #         else:
+        #             decrypted_string += chr(ord(ch) - offset_value)
+        #     # Printing decrypted string 
+        #     print('Offset:',offset_value,'= Decrypted string:' ,decrypted_string)
